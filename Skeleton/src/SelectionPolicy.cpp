@@ -32,7 +32,7 @@ class BalancedSelection: public SelectionPolicy {
             int life = this->LifeQualityScore;
             int eco = this->EconomyScore;
             int env = this->EnvironmentScore;
-            int minDiff = INFINITY;
+            int minDiff = INT64_MAX;
             int index = 0;
             int minDiffIndex = 0;
             for(const FacilityType& facility : facilitiesOptions)
@@ -48,9 +48,15 @@ class BalancedSelection: public SelectionPolicy {
                 }
                 index++;
             }
+            LifeQualityScore += facilitiesOptions[minDiffIndex].getLifeQualityScore();
+            EconomyScore += facilitiesOptions[minDiffIndex].getEconomyScore();
+            EnvironmentScore += facilitiesOptions[minDiffIndex].getEnvironmentScore();
             return facilitiesOptions[minDiffIndex];
         }
-        const string toString() const override;
+        const string toString() const override
+        {
+            return "bal";
+        }
         BalancedSelection *clone() const override;
         ~BalancedSelection() override = default;
 };
@@ -71,7 +77,10 @@ class EconomySelection: public SelectionPolicy {
             return facilitiesOptions[lastSelectedIndex];
 
         }
-        const string toString() const override;
+        const string toString() const override
+        {
+            return "eco";
+        }
         EconomySelection *clone() const override;
         ~EconomySelection() override = default;
    
@@ -92,7 +101,10 @@ class SustainabilitySelection: public SelectionPolicy {
             }
             return facilitiesOptions[lastSelectedIndex];
         }
-        const string toString() const override;
+        const string toString() const override
+        {
+            return "env";
+        }
         SustainabilitySelection *clone() const override;
         ~SustainabilitySelection() override = default;
     

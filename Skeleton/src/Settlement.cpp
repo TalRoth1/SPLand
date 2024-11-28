@@ -3,6 +3,11 @@
 
 using namespace std;
 
+enum class SettlementType {
+    VILLAGE,
+    CITY,
+    METROPOLIS,
+};
 class Settlement
 {
 private:
@@ -20,6 +25,11 @@ public:
     }
     const string toString()
     {
-
+        if (type == SettlementType::VILLAGE) 
+            return "0";
+        else if (type == SettlementType::CITY) 
+            return "1"; 
+        else if (type == SettlementType::METROPOLIS) 
+            return "2";  
     }
 };

@@ -60,7 +60,8 @@
         "unordered_map": "cpp",
         "variant": "cpp",
         "algorithm": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "random": "cpp"
     },
     "terminal.integrated.inheritEnv": false,
 }
