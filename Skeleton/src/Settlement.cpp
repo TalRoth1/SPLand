@@ -3,33 +3,21 @@
 
 using namespace std;
 
-enum class SettlementType {
-    VILLAGE,
-    CITY,
-    METROPOLIS,
-};
-class Settlement
+Settlement::Settlement(const string &name, SettlementType type):name(name), type(type){};
+const string& Settlement::getName() const
 {
-private:
-    const string name;
-    SettlementType type;
-public:
-    Settlement(const string &name, SettlementType type):name(name), type(type){};
-    const string &getName() const
-    {
-        return this->name;
-    }
-    SettlementType getType() const
-    {
-        return this->type;
-    }
-    const string toString()
-    {
-        if (type == SettlementType::VILLAGE) 
-            return "0";
-        else if (type == SettlementType::CITY) 
-            return "1"; 
-        else if (type == SettlementType::METROPOLIS) 
-            return "2";  
-    }
-};
+    return this->name;
+}
+SettlementType  Settlement::getType() const
+{
+    return this->type;
+}
+const string  Settlement::toString() const
+{
+    if (type == SettlementType::VILLAGE) 
+        return "0";
+    else if (type == SettlementType::CITY) 
+        return "1"; 
+    else if (type == SettlementType::METROPOLIS) 
+        return "2";  
+}
