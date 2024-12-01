@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):plan_id(plan_id), settlement(settlement),selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),facilities(vector<Facility*>()), underConstruction(vector<Facility*>()),facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0){}
+Plan::Plan(const int planId, const Settlement& town, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):plan_id(planId), settlement(town),selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),facilities(vector<Facility*>()), underConstruction(vector<Facility*>()),facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0){}
 Plan::Plan(const Plan& p):plan_id(p.getPlanID()), settlement(Settlement(p.settlement)),selectionPolicy(p.selectionPolicy->clone()), status(p.status), facilities(vector<Facility*>()), underConstruction(vector<Facility*>()), facilityOptions(vector<FacilityType>(p.facilityOptions)),life_quality_score(p.life_quality_score),economy_score(p.economy_score),environment_score(p.environment_score)
 {
     for(Facility* fac : p.facilities)
@@ -52,10 +52,13 @@ void Plan::step()
     {
     case SettlementType::VILLAGE:
         avail = 1;
+        break;
     case SettlementType::CITY:
         avail = 2;
+        break;
     case SettlementType::METROPOLIS:
         avail = 3;
+        break;
     }
     if ( underConstruction.size() == avail)
         this->status = PlanStatus::BUSY;
@@ -85,9 +88,9 @@ void Plan::step()
 void Plan::printStatus()
 {
     cout << "PlanID :" << this->plan_id << endl;
-    cout << "SettlementName :" << this->settlement.getName() << endl;
-    cout << "PlanStatus :" << (this->status == PlanStatus::AVALIABLE ? "AVAILABLE" : "BUSY") << endl;
-    cout << "SelectionPolicy :" << (this->selectionPolicy->toString()) << endl;
+    cout << "SettlementName :" << this -> settlement.getName() << endl;
+    cout << "PlanStatus :" << (this -> status == PlanStatus::AVALIABLE ? "AVAILABLE" : "BUSY") << endl;
+    cout << "SelectionPolicy :" << (this -> selectionPolicy->toString()) << endl;
     cout << "Life EconomyScore :" << life_quality_score << endl;
     cout << "Economy Score :" << economy_score << endl;
     cout << "Environment Score :" << environment_score<< endl; 
@@ -114,13 +117,15 @@ void Plan::addFacility(Facility* facility)
 const string Plan::toString() const{}
 Plan::~Plan()
 {
-    delete this->selectionPolicy;
+    delete this -> selectionPolicy;
     for(Facility* fac : this->facilities)
     {
         delete fac;
     }
+    facilities.clear();
     for(Facility* fac : this->underConstruction)
     {
         delete fac;
     }
+    underConstruction.clear();
 }

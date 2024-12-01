@@ -15,16 +15,16 @@ using namespace std;
 class BaseAction;
 class SelectionPolicy;
 
-Simulation::Simulation(const string &configFilePath): isRunning(false), planCounter(0), actionsLog(vector<BaseAction*>()), plans(vector<Plan>()), settlements (vector<Settlement*>()), facilitiesOptions(vector<FacilityType>())
+Simulation::Simulation(const string &configFilePath): isRunning(false), planCounter(0), actionsLog(vector<BaseAction*>()), plans(vector<Plan>()), settlements(vector<Settlement*>()), facilitiesOptions(vector<FacilityType>()) 
 {
-    Simulation::open();
+    this -> plans.reserve(100);
+    this->open();
     ifstream configFile(configFilePath);  // Open the config file for reading
 
     string line;
-    while (getline(configFile, line)) 
-    {
+    while (getline(configFile, line)) {
         istringstream iss(line);
-        
+
         // Skip empty lines or comment lines (lines starting with "#")
         if (line.empty() || line[0] == '#') {
             continue;
@@ -38,38 +38,40 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
             string settlementName;
             int settlementType;
             iss >> settlementName >> settlementType;
-            switch (settlementType)
-            {
-            case 0:
-                settlements.push_back(new Settlement(settlementName, SettlementType::VILLAGE));
-            case 1:
-                settlements.push_back(new Settlement(settlementName, SettlementType::CITY));
-            case 2:
-                settlements.push_back(new Settlement(settlementName, SettlementType::METROPOLIS));
+            switch (settlementType) {
+                case 0:
+                    settlements.push_back(new Settlement(settlementName, SettlementType::VILLAGE));
+                    break;
+                case 1:
+                    settlements.push_back(new Settlement(settlementName, SettlementType::CITY));
+                    break;
+                case 2:
+                    settlements.push_back(new Settlement(settlementName, SettlementType::METROPOLIS));
+                    break;
             }
-        }
-        else if (type == "facility") {
+        } else if (type == "facility") {
             // Read facility details: facility <facility_name> <category> <price> <lifeq_impact> <eco_impact> <env_impact>
             string facilityName;
             int category, price, lifeQualityImpact, economyImpact, environmentImpact;
             iss >> facilityName >> category >> price >> lifeQualityImpact >> economyImpact >> environmentImpact;
-            
+
             // Create FacilityType and add to the facilitiesOptions vector
-            switch (category)
-            {
-            case 0:
-                facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::LIFE_QUALITY, price, lifeQualityImpact, economyImpact, environmentImpact));
-            case 1:
-                facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::ECONOMY, price, lifeQualityImpact, economyImpact, environmentImpact));
-            case 2:
-                facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::ENVIRONMENT, price, lifeQualityImpact, economyImpact, environmentImpact));
+            switch (category) {
+                case 0:
+                    facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::LIFE_QUALITY, price, lifeQualityImpact, economyImpact, environmentImpact));
+                    break;
+                case 1:
+                    facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::ECONOMY, price, lifeQualityImpact, economyImpact, environmentImpact));
+                    break;
+                case 2:
+                    facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::ENVIRONMENT, price, lifeQualityImpact, economyImpact, environmentImpact));
+                    break;
             }
-        }
-        else if (type == "plan") {
+        } else if (type == "plan") {
             // Read plan details: plan <settlement_name> <selection_policy>
             string settlementName, selectionPolicy;
             iss >> settlementName >> selectionPolicy;
-            
+
             // Find the settlement object from the settlements vector
             Settlement* settlement = nullptr;
             for (Settlement* s : settlements) {
@@ -90,6 +92,7 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
             } else if (selectionPolicy == "env") {
                 policy = new SustainabilitySelection();
             }
+
             // Create Plan object and add to the plans vector
             Plan newPlan(planCounter++, *settlement, policy, facilitiesOptions);
             plans.push_back(newPlan);
@@ -98,6 +101,7 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
 
     configFile.close();  // Close the config file after reading
 }
+
 Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCounter(sim.planCounter), actionsLog(vector<BaseAction*>()), plans(vector<Plan>()), settlements(vector<Settlement*>()), facilitiesOptions(vector<FacilityType>(sim.facilitiesOptions))
 {
     for(BaseAction* act : sim.actionsLog)
@@ -116,9 +120,12 @@ Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCou
 void Simulation::start()
 {
     cout<< "The simulation has started" <<endl;
+    string action;
     while(isRunning)
     {
-        
+        cin >> action;
+        if(action == "close")
+            this -> close();
     }
 }
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
@@ -156,7 +163,7 @@ bool Simulation::isSettlementExists(const string &settlementName)
 { 
     for( Settlement* exist: settlements)
     {
-        if(exist->getName() == settlementName)
+        if(exist -> getName() == settlementName)
             return true;
     }     
     return false; 
@@ -165,7 +172,7 @@ Settlement& Simulation::getSettlement(const string &settlementName)
 {
     for(Settlement* exist: settlements)
     {
-        if(exist->getName() == settlementName)
+        if(exist -> getName() == settlementName)
         {
             return *exist;
         }
@@ -183,30 +190,31 @@ Plan& Simulation::getPlan(const int planID)
 }
 vector<Plan>& Simulation::getPlans()
 {
-    return this->plans;
+    return this -> plans;
 }
 vector<BaseAction*>& Simulation::getActions()
 {
-    return this->actionsLog;
+    return this -> actionsLog;
 }
 
 void Simulation::step()
 {
-    for(Plan plan: plans) 
+    for(Plan& plan: plans) 
     {
         plan.step(); 
     }   
 }
 void Simulation::close()
 { 
-    for(Plan plan: plans) 
+    for(Plan& plan: plans) 
     {
         plan.printStatus(); 
-    }  
+    }
+    isRunning = false;
 }
 void Simulation::open() 
 {
-    isRunning=true; 
+    isRunning = true; 
 }
 Simulation::~Simulation()
 {
@@ -214,8 +222,10 @@ Simulation::~Simulation()
     {
         delete act;
     }
+    actionsLog.clear();
     for(Settlement* sett : this->settlements)
     {
         delete sett;
     }
+    settlements.clear();
 }
