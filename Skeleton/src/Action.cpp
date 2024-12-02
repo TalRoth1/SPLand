@@ -278,8 +278,6 @@ const string PrintActionsLog::toString() const
 Close::Close(){}
 void Close::act(Simulation &simulation)
 {
-    for(Plan p : simulation.getPlans())
-        p.printStatus(); 
     simulation.close();
     this->complete();
 }

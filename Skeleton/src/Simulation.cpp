@@ -54,9 +54,9 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
             string facilityName;
             int category, price, lifeQualityImpact, economyImpact, environmentImpact;
             iss >> facilityName >> category >> price >> lifeQualityImpact >> economyImpact >> environmentImpact;
-
             // Create FacilityType and add to the facilitiesOptions vector
-            switch (category) {
+            switch (category) 
+            {
                 case 0:
                     facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::LIFE_QUALITY, price, lifeQualityImpact, economyImpact, environmentImpact));
                     break;
@@ -98,7 +98,6 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
             plans.push_back(newPlan);
         }
     }
-
     configFile.close();  // Close the config file after reading
 }
 
@@ -119,13 +118,32 @@ Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCou
 }
 void Simulation::start()
 {
+    this -> open();
     cout<< "The simulation has started" <<endl;
+    string data;
     string action;
     while(isRunning)
     {
-        cin >> action;
+        getline(cin, data);
+        istringstream iss(data);
+        iss >> action;
+        if(action == "step")
+        {
+            int steps;
+            iss >> steps;
+            SimulateStep* act = new SimulateStep(steps);
+            act -> act(*this);
+        }
+        if(action == "log")
+        {
+            PrintActionsLog* act = new PrintActionsLog();
+            act -> act(*this);
+        }
         if(action == "close")
-            this -> close();
+        {
+            Close* act = new Close();
+            act -> act(*this);
+        }
     }
 }
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
@@ -206,6 +224,7 @@ void Simulation::step()
 }
 void Simulation::close()
 { 
+    cout << plans.size() << endl;
     for(Plan& plan: plans) 
     {
         plan.printStatus(); 

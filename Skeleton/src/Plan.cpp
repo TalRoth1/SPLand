@@ -4,7 +4,7 @@
 using namespace std;
 
 Plan::Plan(const int planId, const Settlement& town, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):plan_id(planId), settlement(town),selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),facilities(vector<Facility*>()), underConstruction(vector<Facility*>()),facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0){}
-Plan::Plan(const Plan& p):plan_id(p.getPlanID()), settlement(Settlement(p.settlement)),selectionPolicy(p.selectionPolicy->clone()), status(p.status), facilities(vector<Facility*>()), underConstruction(vector<Facility*>()), facilityOptions(vector<FacilityType>(p.facilityOptions)),life_quality_score(p.life_quality_score),economy_score(p.economy_score),environment_score(p.environment_score)
+Plan::Plan(const Plan& p):plan_id(p.getPlanID()), settlement(p.getSettlement()),selectionPolicy(p.selectionPolicy->clone()), status(p.status), facilities(vector<Facility*>()), underConstruction(vector<Facility*>()), facilityOptions(vector<FacilityType>(p.facilityOptions)),life_quality_score(p.life_quality_score),economy_score(p.economy_score),environment_score(p.environment_score)
 {
     for(Facility* fac : p.facilities)
     {
@@ -66,10 +66,11 @@ void Plan::step()
         this->status = PlanStatus::AVALIABLE;
     while(status == PlanStatus::AVALIABLE)
     {
-        const FacilityType& selected = selectionPolicy->selectFacility(facilityOptions);
+        const FacilityType& selected = selectionPolicy -> selectFacility(facilityOptions);
         addFacility(new Facility(selected, settlement.getName()));
         if ( underConstruction.size() == avail)
             this->status = PlanStatus::BUSY;
+        cout << "construct" << endl;
     }
     for(int i = 0; i < underConstruction.size(); i++)
     {

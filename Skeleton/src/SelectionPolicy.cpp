@@ -62,10 +62,20 @@ BalancedSelection* BalancedSelection::clone() const
 EconomySelection::EconomySelection(): lastSelectedIndex(0){};
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions)
 {
-    
-    while(facilitiesOptions[lastSelectedIndex].getCategory()!=FacilityCategory::ECONOMY){
+    while(facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ECONOMY)
+    {
+        cout << facilitiesOptions[lastSelectedIndex].getName() << endl;
+        switch(facilitiesOptions[lastSelectedIndex].getCategory())
+        {
+            case FacilityCategory::ECONOMY:
+                cout << "eco" << endl;
+            case FacilityCategory::LIFE_QUALITY:
+                cout << "life" << endl;
+            case FacilityCategory::ENVIRONMENT:
+                cout << "env" << endl;
+        }
         lastSelectedIndex++; 
-        if(lastSelectedIndex==facilitiesOptions.size())
+        if(lastSelectedIndex == facilitiesOptions.size())
             lastSelectedIndex=0; 
     }
     return facilitiesOptions[lastSelectedIndex];
