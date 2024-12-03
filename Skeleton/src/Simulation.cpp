@@ -238,14 +238,17 @@ void Simulation::start()
             switch(type)
             {
                 case 0:
-                delete act;
-                 act = new AddSettlement(settname, SettlementType::VILLAGE);
+                    delete act;
+                    act = new AddSettlement(settname, SettlementType::VILLAGE);
+                    break;
                 case 1:
-                delete act;
-                act = new AddSettlement(settname, SettlementType::CITY);
+                    delete act;
+                    act = new AddSettlement(settname, SettlementType::CITY);
+                    break;
                 case 2:
-                delete act;
-                act = new AddSettlement(settname, SettlementType::METROPOLIS);                                    
+                    delete act;
+                    act = new AddSettlement(settname, SettlementType::METROPOLIS);
+                    break;                             
             }
             act -> act(*this);
         }
@@ -258,14 +261,17 @@ void Simulation::start()
             switch(cat)
             {
                 case 0:
-                delete act;
-                 act = new AddFacility(facName, FacilityCategory::LIFE_QUALITY, price, life, eco, env);
+                    delete act;
+                    act = new AddFacility(facName, FacilityCategory::LIFE_QUALITY, price, life, eco, env);
+                    break;
                 case 1:
-                delete act;
-                act = new AddFacility(facName, FacilityCategory::ECONOMY, price, life, eco, env);
+                    delete act;
+                    act = new AddFacility(facName, FacilityCategory::ECONOMY, price, life, eco, env);
+                    break;
                 case 2:
-                delete act;
-                act = new AddFacility(facName, FacilityCategory::ENVIRONMENT, price, life, eco, env);                                    
+                    delete act;
+                    act = new AddFacility(facName, FacilityCategory::ENVIRONMENT, price, life, eco, env);
+                    break;                                   
             }
             act -> act(*this);
         }

@@ -167,9 +167,9 @@ const string AddFacility::toString() const
     switch (getStatus())
     {
         case ActionStatus::COMPLETED:
-            return "facility " + facilityName +to_string(type) +to_string(price) +to_string(lifeQualityScore) +to_string(economyScore)+ to_string(environmentScore)+ " COMPLETED";
+            return "facility " + facilityName + " " + to_string(type) + " " + to_string(price) + " " + to_string(lifeQualityScore) + " " + to_string(economyScore) + " " + to_string(environmentScore) + " " + " COMPLETED";
         case ActionStatus::ERROR:
-            return "facility " + facilityName +to_string(type) +to_string(price) +to_string(lifeQualityScore) +to_string(economyScore)+ to_string(environmentScore)+ " ERROR";
+            return "facility " + facilityName + " " + to_string(type) + " " + to_string(price) + " "+ to_string(lifeQualityScore) + " " + to_string(economyScore) + " " + to_string(environmentScore) + " " + " ERROR";
     }
     return ""; // Should never get here
 }
