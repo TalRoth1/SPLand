@@ -65,16 +65,6 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
 {
     while(facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ECONOMY)
     {
-        cout << facilitiesOptions[lastSelectedIndex].getName() << endl;
-        switch(facilitiesOptions[lastSelectedIndex].getCategory())
-        {
-            case FacilityCategory::ECONOMY:
-                cout << "eco" << endl;
-            case FacilityCategory::LIFE_QUALITY:
-                cout << "life" << endl;
-            case FacilityCategory::ENVIRONMENT:
-                cout << "env" << endl;
-        }
         lastSelectedIndex++; 
         if(static_cast<vector<Facility*>::size_type>(lastSelectedIndex) == facilitiesOptions.size())
             lastSelectedIndex=0; 

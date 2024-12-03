@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Plan::Plan(const int planId, const Settlement& town, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):plan_id(planId), settlement(town),selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),facilities(), underConstruction(),facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0){}
-Plan::Plan(const Plan& p):plan_id(p.getPlanID()), settlement(p.settlement),selectionPolicy(p.selectionPolicy->clone()), status(p.status), facilities(), underConstruction(), facilityOptions(vector<FacilityType>(p.facilityOptions)),life_quality_score(p.life_quality_score),economy_score(p.economy_score),environment_score(p.environment_score)
+Plan::Plan(const int planId, const Settlement& town, SelectionPolicy *selectionPolicy, const vector<FacilityType>& facilityOptions):plan_id(planId), settlement(town),selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),facilities(), underConstruction(),facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0){}
+Plan::Plan(const Plan& p):plan_id(p.plan_id), settlement(p.settlement),selectionPolicy(p.selectionPolicy->clone()), status(p.status), facilities(), underConstruction(), facilityOptions(p.facilityOptions),life_quality_score(p.life_quality_score),economy_score(p.economy_score),environment_score(p.environment_score)
 {
     for(Facility* fac : p.facilities)
     {
@@ -91,7 +91,6 @@ void Plan::step()
         addFacility(new Facility(selected, settlement.getName()));
         if ( underConstruction.size() == static_cast<vector<Facility*>::size_type>(avail))
             this->status = PlanStatus::BUSY;
-        cout << "construct" << endl;
     }
     for(size_t i = 0; i < underConstruction.size(); i++)
     {
@@ -116,13 +115,6 @@ void Plan::printStatus()
     cout << "Life EconomyScore :" << life_quality_score << endl;
     cout << "Economy Score :" << economy_score << endl;
     cout << "Environment Score :" << environment_score<< endl; 
-    for (Facility* facility  : facilities)
-    {
-        cout << "Facility Name :"  << facility->getName() << endl;
-        cout << "Facility Name :"  << (facility->getStatus()  == FacilityStatus::OPERATIONAL ? "OPERATOPNAL" : "UNDERCONSTRUCTION")<< endl;
-        
-    } 
-
 }
 const vector<Facility*>& Plan::getFacilities() const
 { 

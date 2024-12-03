@@ -17,7 +17,6 @@ class SelectionPolicy;
 
 Simulation::Simulation(const string &configFilePath): isRunning(false), planCounter(0), actionsLog(vector<BaseAction*>()), plans(vector<Plan>()), settlements(vector<Settlement*>()), facilitiesOptions(vector<FacilityType>()) 
 {
-    this -> plans.reserve(100);
     this->open();
     ifstream configFile(configFilePath);  // Open the config file for reading
 
