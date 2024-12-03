@@ -249,7 +249,7 @@ void Simulation::start()
             }
             act -> act(*this);
         }
-        if(action == "plan")
+        if(action == "facility")
         {
             string facName;
             int cat, price, life, eco, env;
@@ -366,7 +366,6 @@ void Simulation::step()
 }
 void Simulation::close()
 { 
-    cout << plans.size() << endl;
     for(Plan& plan: plans) 
     {
         plan.printStatus(); 
