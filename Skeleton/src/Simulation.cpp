@@ -222,6 +222,53 @@ void Simulation::start()
             SimulateStep* act = new SimulateStep(steps);
             act -> act(*this);
         }
+        if(action == "plan")
+        {
+            string settname, selectPol;
+            iss >> settname >> selectPol;
+            AddPlan* act = new AddPlan(settname, selectPol);
+            act -> act(*this);
+        }
+        if(action == "settlement")
+        {
+            string settname;
+            int type;
+            iss >> settname >> type;
+            AddSettlement* act = new AddSettlement(settname, SettlementType::VILLAGE);
+            switch(type)
+            {
+                case 0:
+                delete act;
+                 act = new AddSettlement(settname, SettlementType::VILLAGE);
+                case 1:
+                delete act;
+                act = new AddSettlement(settname, SettlementType::CITY);
+                case 2:
+                delete act;
+                act = new AddSettlement(settname, SettlementType::METROPOLIS);                                    
+            }
+            act -> act(*this);
+        }
+        if(action == "plan")
+        {
+            string facName;
+            int cat, price, life, eco, env;
+            iss >> facName >> cat >> price >> life >> eco >> env;
+            AddFacility* act = new AddFacility(facName, FacilityCategory::LIFE_QUALITY, price, life, eco, env);
+            switch(cat)
+            {
+                case 0:
+                delete act;
+                 act = new AddFacility(facName, FacilityCategory::LIFE_QUALITY, price, life, eco, env);
+                case 1:
+                delete act;
+                act = new AddFacility(facName, FacilityCategory::ECONOMY, price, life, eco, env);
+                case 2:
+                delete act;
+                act = new AddFacility(facName, FacilityCategory::ENVIRONMENT, price, life, eco, env);                                    
+            }
+            act -> act(*this);
+        }
         if(action == "log")
         {
             PrintActionsLog* act = new PrintActionsLog();

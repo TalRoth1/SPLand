@@ -72,13 +72,13 @@ void AddPlan::act(Simulation &simulation)
         s = new SustainabilitySelection();
     else
         this -> error("cannot create this plan");
-    if(!simulation.isSettlementExists(settlementName))
+    if(simulation.isSettlementExists(settlementName))
     {
         simulation.addPlan(simulation.getSettlement(settlementName), s);
         this -> complete();
     }
     else
-        this -> error("cannot create this plan");
+        this -> error("cannot create this plan hbbh");
     simulation.addAction(this);
 }
 const string AddPlan::toString() const
@@ -86,9 +86,9 @@ const string AddPlan::toString() const
     switch (getStatus())
     {
         case ActionStatus::COMPLETED:
-            return "plan " + settlementName +selectionPolicy+ " COMPLETED";
+            return "plan " + settlementName + " " + selectionPolicy + " COMPLETED";
         case ActionStatus::ERROR:
-            return "plan " + settlementName +selectionPolicy+ " ERROR";
+            return "plan " + settlementName + " " + selectionPolicy + " ERROR";
     }
     return ""; // Should never get here
 }
@@ -129,9 +129,9 @@ const string AddSettlement::toString() const
     switch (getStatus())
     {
         case ActionStatus::COMPLETED:
-            return "Settlement " + settlementName +to_string(type) + " COMPLETED";
+            return "Settlement " + settlementName+ " " + to_string(type) + " COMPLETED";
         case ActionStatus::ERROR:
-            return "Settlement " + settlementName +to_string(type)+ " ERROR";
+            return "Settlement " + settlementName+ " " + to_string(type)+ " ERROR";
     }
     return ""; // Should never get here
 }
