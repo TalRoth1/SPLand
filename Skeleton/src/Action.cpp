@@ -158,11 +158,14 @@ const string AddFacility::toString() const
     switch (facilityCategory) 
     {
         case FacilityCategory::LIFE_QUALITY:
-            type= 0; 
+            type= 0;
+            break;
         case FacilityCategory::ECONOMY:
-            type= 1; 
+            type= 1;
+            break;
         case FacilityCategory::ENVIRONMENT:
-            type= 2; 
+            type= 2;
+            break;
     }
     switch (getStatus())
     {
