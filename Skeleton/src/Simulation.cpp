@@ -116,6 +116,95 @@ Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCou
         this->settlements.push_back(new Settlement(*sett));
     }
 }
+Simulation::Simulation(Simulation&& sim):isRunning(sim.isRunning), planCounter(sim.planCounter), actionsLog(move(sim.actionsLog)), plans(sim.plans), settlements(move(sim.settlements)), facilitiesOptions(sim.facilitiesOptions)
+{
+    for(BaseAction*& act : sim.actionsLog)
+    {
+        act = nullptr;
+    }
+    for(Settlement*& sett : sim.settlements)
+    {
+        sett = nullptr;
+    }
+}
+Simulation& Simulation::operator=(const Simulation& sim)
+{
+    if(this != &sim)
+    {
+        for(BaseAction* act : actionsLog)
+        {
+            delete act;
+        }
+        actionsLog.clear();
+        plans.clear();
+        for(Settlement* sett : settlements)
+        {
+            delete sett;
+        }
+        settlements.clear();
+        facilitiesOptions.clear();
+
+        this -> isRunning = sim.isRunning;
+        this -> planCounter = sim.planCounter;
+        for (BaseAction* act : sim.actionsLog)
+        {
+            actionsLog.push_back(act -> clone());
+        }
+        for (Settlement* sett : sim.settlements)
+        {
+            settlements.push_back(new Settlement(*sett));
+        }
+        for (const FacilityType& fac : sim.facilitiesOptions)
+        {
+            facilitiesOptions.push_back(fac);
+        }
+        for (const Plan& p : sim.plans)
+        {
+            plans.push_back(p);
+        }
+    }
+    return *this;
+}
+Simulation& Simulation::operator=(Simulation&& sim)
+{
+    if(this != &sim)
+    {
+        for(BaseAction* act : actionsLog)
+        {
+            delete act;
+        }
+        actionsLog.clear();
+        plans.clear();
+        for(Settlement* sett : settlements)
+        {
+            delete sett;
+        }
+        settlements.clear();
+        facilitiesOptions.clear();
+
+        this -> isRunning = sim.isRunning;
+        this -> planCounter = sim.planCounter;
+        for (BaseAction* act : sim.actionsLog)
+        {
+            actionsLog.push_back(act -> clone());
+            act = nullptr;
+        }
+        for (Settlement* sett : sim.settlements)
+        {
+            settlements.push_back(new Settlement(*sett));
+            sett = nullptr;
+        }
+        for (const FacilityType& fac : sim.facilitiesOptions)
+        {
+            facilitiesOptions.push_back(fac);
+        }
+        for (const Plan& p : sim.plans)
+        {
+            plans.push_back(p);
+        }
+    }
+    return *this;
+}
 void Simulation::start()
 {
     this -> open();
@@ -188,23 +277,30 @@ bool Simulation::isSettlementExists(const string &settlementName)
 }
 Settlement& Simulation::getSettlement(const string &settlementName)
 {
+
     for(Settlement* exist: settlements)
     {
         if(exist -> getName() == settlementName)
         {
             return *exist;
         }
-    }     
+    } 
+    Settlement result = Settlement("Error", SettlementType::VILLAGE); // Should not reach this code
+    Settlement& ref = result;
+    return ref;
 }
 Plan& Simulation::getPlan(const int planID)
 {
-    for(Plan exist: plans) 
+    for(Plan& exist: plans) 
     {
         if(exist.getPlanID()== planID)
         {
             return exist;
         }
-    }   
+    }
+    Plan result = Plan(plans[0]); //Should not reach this code
+    Plan& ref = result;
+    return ref;  
 }
 vector<Plan>& Simulation::getPlans()
 {

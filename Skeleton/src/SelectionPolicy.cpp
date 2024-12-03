@@ -1,5 +1,6 @@
 #include "SelectionPolicy.h"
 #include <iostream>
+#include <climits>
 
 using namespace std;
 
@@ -7,7 +8,7 @@ NaiveSelection::NaiveSelection():lastSelectedIndex(-1){};
 const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions)
 {
     lastSelectedIndex++;
-    if(lastSelectedIndex == facilitiesOptions.size())
+    if(static_cast<vector<Facility*>::size_type>(lastSelectedIndex) == facilitiesOptions.size())
         lastSelectedIndex = 0;
     return facilitiesOptions[lastSelectedIndex];
 }
@@ -28,7 +29,7 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
     int life = this->LifeQualityScore;
     int eco = this->EconomyScore;
     int env = this->EnvironmentScore;
-    int minDiff = INT64_MAX;
+    int minDiff = INT_MAX;
     int index = 0;
     int minDiffIndex = 0;
     for(const FacilityType& facility : facilitiesOptions)
@@ -75,7 +76,7 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
                 cout << "env" << endl;
         }
         lastSelectedIndex++; 
-        if(lastSelectedIndex == facilitiesOptions.size())
+        if(static_cast<vector<Facility*>::size_type>(lastSelectedIndex) == facilitiesOptions.size())
             lastSelectedIndex=0; 
     }
     return facilitiesOptions[lastSelectedIndex];
@@ -98,7 +99,7 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
     
     while(facilitiesOptions[lastSelectedIndex].getCategory()!=FacilityCategory::ENVIRONMENT){
         lastSelectedIndex++; 
-        if(lastSelectedIndex==facilitiesOptions.size())
+        if(static_cast<vector<Facility*>::size_type>(lastSelectedIndex) == facilitiesOptions.size())
             lastSelectedIndex=0; 
     }
     return facilitiesOptions[lastSelectedIndex];

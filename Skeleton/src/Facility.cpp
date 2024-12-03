@@ -47,6 +47,7 @@ FacilityStatus Facility::step()
         if (timeLeft == 0)
             this->setStatus(FacilityStatus::OPERATIONAL);
     }
+    return this -> status;
 }
 void Facility::setStatus(FacilityStatus status)
 {
@@ -56,4 +57,7 @@ const FacilityStatus& Facility::getStatus() const
 {
     return this->status;
 }
-const string Facility::toString() const{}
+const string Facility::toString() const
+{
+    return this -> name;
+}

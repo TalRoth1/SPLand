@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Plan::Plan(const int planId, const Settlement& town, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):plan_id(planId), settlement(town),selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),facilities(vector<Facility*>()), underConstruction(vector<Facility*>()),facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0){}
-Plan::Plan(const Plan& p):plan_id(p.getPlanID()), settlement(p.getSettlement()),selectionPolicy(p.selectionPolicy->clone()), status(p.status), facilities(vector<Facility*>()), underConstruction(vector<Facility*>()), facilityOptions(vector<FacilityType>(p.facilityOptions)),life_quality_score(p.life_quality_score),economy_score(p.economy_score),environment_score(p.environment_score)
+Plan::Plan(const int planId, const Settlement& town, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):plan_id(planId), settlement(town),selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),facilities(), underConstruction(),facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0){}
+Plan::Plan(const Plan& p):plan_id(p.getPlanID()), settlement(p.settlement),selectionPolicy(p.selectionPolicy->clone()), status(p.status), facilities(), underConstruction(), facilityOptions(vector<FacilityType>(p.facilityOptions)),life_quality_score(p.life_quality_score),economy_score(p.economy_score),environment_score(p.environment_score)
 {
     for(Facility* fac : p.facilities)
     {
@@ -12,8 +12,25 @@ Plan::Plan(const Plan& p):plan_id(p.getPlanID()), settlement(p.getSettlement()),
     }
     for(Facility* fac : p.underConstruction)
     {
-        this->facilities.push_back(new Facility(*fac));
+        this->underConstruction.push_back(new Facility(*fac));
     }
+}
+Plan& Plan::operator=(const Plan& p)
+{
+    if(this != &p)
+    {
+    delete selectionPolicy;
+    for(Facility* fac : underConstruction)
+    {
+        delete fac;
+    }
+    for(Facility* fac : facilities)
+    {
+        delete fac;
+    }
+    *this = Plan(p);
+    }
+    return *this;
 }
 const int Plan::getlifeQualityScore() const
 {
@@ -41,8 +58,12 @@ const Settlement& Plan::getSettlement() const
 }
 void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 {
-    if(typeid(this->selectionPolicy) ==  typeid(selectionPolicy))
-        throw string("Cannot change selction policy");
+    if (selectionPolicy != nullptr)
+    {
+        delete selectionPolicy;
+    }
+    if (typeid(this->selectionPolicy) ==  typeid(selectionPolicy))
+        return;
     this->selectionPolicy = selectionPolicy;
 }
 void Plan::step()
@@ -60,7 +81,7 @@ void Plan::step()
         avail = 3;
         break;
     }
-    if ( underConstruction.size() == avail)
+    if (underConstruction.size() == static_cast<vector<Facility*>::size_type>(avail))
         this->status = PlanStatus::BUSY;
     else 
         this->status = PlanStatus::AVALIABLE;
@@ -68,11 +89,11 @@ void Plan::step()
     {
         const FacilityType& selected = selectionPolicy -> selectFacility(facilityOptions);
         addFacility(new Facility(selected, settlement.getName()));
-        if ( underConstruction.size() == avail)
+        if ( underConstruction.size() == static_cast<vector<Facility*>::size_type>(avail))
             this->status = PlanStatus::BUSY;
         cout << "construct" << endl;
     }
-    for(int i = 0; i < underConstruction.size(); i++)
+    for(size_t i = 0; i < underConstruction.size(); i++)
     {
         underConstruction[i]->step();
         if(underConstruction[i]->getStatus() == FacilityStatus::OPERATIONAL)
@@ -113,9 +134,13 @@ const int Plan::getPlanID() const
 }
 void Plan::addFacility(Facility* facility)
 {
+    // Check if underconstruction is full
     underConstruction.push_back(facility);
 }
-const string Plan::toString() const{}
+const string Plan::toString() const
+{
+    return "Plan" + this -> plan_id;
+}
 Plan::~Plan()
 {
     delete this -> selectionPolicy;

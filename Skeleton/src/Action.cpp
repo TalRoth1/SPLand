@@ -2,11 +2,11 @@
 #include <vector>
 #include "Simulation.h"
 #include "Action.h"
+#include <iostream>
 
 using namespace std;
 
 extern Simulation* backup;
-#include <iostream>; 
 enum class SettlementType;
 enum class FacilityCategory;
 
@@ -17,15 +17,15 @@ void BaseAction::complete()
 }
 void BaseAction::error(string errorMsg)
 {
-    status=ActionStatus::ERROR;
-    this->errorMsg = errorMsg;
+    status = ActionStatus::ERROR;
+    this -> errorMsg = errorMsg;
     cout << "Error:" << errorMsg << endl; 
 }
 const string& BaseAction::getErrorMsg() const 
 {
     return this -> errorMsg; 
 }
-BaseAction::BaseAction(){}
+BaseAction::BaseAction():errorMsg(""), status(ActionStatus::ERROR){}
 ActionStatus BaseAction::getStatus() const
 {
     return this -> status;
@@ -45,11 +45,12 @@ const string SimulateStep::toString() const
 {
     switch (getStatus())
     {
-    case ActionStatus::COMPLETED:
-        return "step " + to_string(numOfSteps) + " COMPLETED";
-    case ActionStatus::ERROR:
-        return "step " + to_string(numOfSteps) + " ERROR";
+        case ActionStatus::COMPLETED:
+            return "step " + to_string(numOfSteps) + " COMPLETED";
+        case ActionStatus::ERROR:
+            return "step " + to_string(numOfSteps) + " ERROR";
     }
+    return ""; // Should never get here
 }
 SimulateStep* SimulateStep::clone() const
 {
@@ -84,13 +85,12 @@ const string AddPlan::toString() const
 {
     switch (getStatus())
     {
-    case ActionStatus::COMPLETED:
-        return "plan " + settlementName +selectionPolicy+ " COMPLETED";
-    case ActionStatus::ERROR:
-        return "plan " + settlementName +selectionPolicy+ " ERROR";
+        case ActionStatus::COMPLETED:
+            return "plan " + settlementName +selectionPolicy+ " COMPLETED";
+        case ActionStatus::ERROR:
+            return "plan " + settlementName +selectionPolicy+ " ERROR";
     }
-    
-
+    return ""; // Should never get here
 }
 AddPlan* AddPlan::clone() const
 {
@@ -128,11 +128,12 @@ const string AddSettlement::toString() const
     }
     switch (getStatus())
     {
-    case ActionStatus::COMPLETED:
-        return "Settlement " + settlementName +to_string(type) + " COMPLETED";
-    case ActionStatus::ERROR:
-        return "Settlement " + settlementName +to_string(type)+ " ERROR";
+        case ActionStatus::COMPLETED:
+            return "Settlement " + settlementName +to_string(type) + " COMPLETED";
+        case ActionStatus::ERROR:
+            return "Settlement " + settlementName +to_string(type)+ " ERROR";
     }
+    return ""; // Should never get here
 }
 
 AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):BaseAction(), facilityName(facilityName), facilityCategory(facilityCategory), price(price), lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
@@ -165,11 +166,12 @@ const string AddFacility::toString() const
     }
     switch (getStatus())
     {
-    case ActionStatus::COMPLETED:
-        return "facility " + facilityName +to_string(type) +to_string(price) +to_string(lifeQualityScore) +to_string(economyScore)+ to_string(environmentScore)+ " COMPLETED";
-    case ActionStatus::ERROR:
-        return "facility " + facilityName +to_string(type) +to_string(price) +to_string(lifeQualityScore) +to_string(economyScore)+ to_string(environmentScore)+ " ERROR";
+        case ActionStatus::COMPLETED:
+            return "facility " + facilityName +to_string(type) +to_string(price) +to_string(lifeQualityScore) +to_string(economyScore)+ to_string(environmentScore)+ " COMPLETED";
+        case ActionStatus::ERROR:
+            return "facility " + facilityName +to_string(type) +to_string(price) +to_string(lifeQualityScore) +to_string(economyScore)+ to_string(environmentScore)+ " ERROR";
     }
+    return ""; // Should never get here
 }
 
 PrintPlanStatus::PrintPlanStatus(int planId):BaseAction(), planId(planId) {}
@@ -190,10 +192,11 @@ const string PrintPlanStatus::toString() const
     switch (getStatus())
     {
         case ActionStatus::COMPLETED:
-            return "printPlanStatus COMPLETED";
+            return "printPlanStatus COMPLETED ";
         case ActionStatus::ERROR:
             return "printPlanStatus Error";
     }
+    return ""; // Should never get here
 }
 
 
@@ -244,10 +247,11 @@ const string ChangePlanPolicy::toString() const
     switch (getStatus())
     {
         case ActionStatus::COMPLETED:
-            return "changePolicy"+ to_string(planId)+ newPolicy+ "COMPLETED";
+            return "changePolicy "+ to_string(planId)+ newPolicy+ " COMPLETED";
         case ActionStatus::ERROR:
-            return "changePolicy"+to_string(planId)+ newPolicy+ "Error";
+            return "changePolicy "+to_string(planId)+ newPolicy+ " ERROR";
     }
+    return ""; // Should never get here
 }
 
 
@@ -268,11 +272,12 @@ const string PrintActionsLog::toString() const
 {
     switch (getStatus())
     {
-    case ActionStatus::COMPLETED:
-            return "PrintActionsLog COMPLETED";
-    case ActionStatus::ERROR:
-            return "PrintActionsLog Error";
+        case ActionStatus::COMPLETED:
+                return "PrintActionsLog COMPLETED";
+        case ActionStatus::ERROR:
+                return "PrintActionsLog ERROR";
     }
+    return ""; // Should never get here
 }
 
 Close::Close(){}
@@ -286,7 +291,17 @@ Close* Close::clone() const
     Close* copy = new Close();
     return copy;
 }
-const string Close::toString() const {};
+const string Close::toString() const 
+{
+    switch (getStatus())
+    {
+        case ActionStatus::COMPLETED:
+            return "Close COMPLETED";
+        case ActionStatus::ERROR:
+            return "Close ERROR";
+    }
+    return ""; // Should never get here
+}
 
 BackupSimulation::BackupSimulation(){}
 void BackupSimulation::act(Simulation &simulation)
@@ -302,13 +317,28 @@ BackupSimulation* BackupSimulation::clone() const
     BackupSimulation* copy = new BackupSimulation();
     return copy;
 }
-const string BackupSimulation::toString() const{}
+const string BackupSimulation::toString() const
+{
+    switch (getStatus())
+    {
+        case ActionStatus::COMPLETED:
+            return "Backupsimulation COMPLETED";
+        case ActionStatus::ERROR:
+            return "Backupsimulation ERROR";
+    }
+    return ""; // Should never get here
+}
 
 
 RestoreSimulation::RestoreSimulation(){}
 void RestoreSimulation::act(Simulation &simulation)
 {
-    simulation.open();
+    if(backup == nullptr)
+    {
+        this -> error("No backup available");
+        return;
+    }
+    simulation = *backup;
     this->complete();
     simulation.addAction(this);
 }
@@ -317,4 +347,14 @@ RestoreSimulation* RestoreSimulation::clone() const
     RestoreSimulation* copy = new RestoreSimulation();
     return copy;
 }
-const string RestoreSimulation::toString() const{}
+const string RestoreSimulation::toString() const
+{
+    switch (getStatus())
+    {
+        case ActionStatus::COMPLETED:
+            return "Restoresimulation COMPLETED";
+        case ActionStatus::ERROR:
+            return "Restoresimulation ERROR";
+    }
+    return ""; // Should never get here
+}

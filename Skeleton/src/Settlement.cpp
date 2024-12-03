@@ -19,5 +19,7 @@ const string  Settlement::toString() const
     else if (type == SettlementType::CITY) 
         return "1"; 
     else if (type == SettlementType::METROPOLIS) 
-        return "2";  
+        return "2";
+    else 
+        return "Not valid settlement type";
 }
