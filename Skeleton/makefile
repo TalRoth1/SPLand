@@ -4,7 +4,7 @@ all: clean compile link
 # Linking Rule
 link:
 	@echo "Linking source files"
-	g++ -o bin/skeleton bin/main.o bin/Settlement.o bin/Simulation.o bin/Facility.o bin/Auxiliary.o bin/Plan.o bin/SelectionPolicy.o bin/Action.o
+	g++ -o bin/simulation bin/main.o bin/Settlement.o bin/Simulation.o bin/Facility.o bin/Auxiliary.o bin/Plan.o bin/SelectionPolicy.o bin/Action.o
 
 # Compile Rule
 compile:

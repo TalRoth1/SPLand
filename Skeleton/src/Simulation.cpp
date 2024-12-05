@@ -272,14 +272,14 @@ void Simulation::start()
             }
             act -> act(*this);
         }
-        if(action== "PrintPlanStatus")
+        if(action== "planStatus")
         {
             int id;
             iss>> id; 
             PrintPlanStatus* act = new PrintPlanStatus(id);
             act -> act(*this);
         }
-        if(action== "ChangePlanPolicy")
+        if(action== "changePolicy")
         {
             string policy; 
             int id;
@@ -314,6 +314,7 @@ void Simulation::start()
         {
             Close* act = new Close();
             act -> act(*this);
+            delete act; 
         }
     }
 }
@@ -407,6 +408,8 @@ void Simulation::close()
         plan.printStatus(); 
     }
     isRunning = false;
+    plans.clear();
+    
 }
 void Simulation::open() 
 {
@@ -424,4 +427,5 @@ Simulation::~Simulation()
         delete sett;
     }
     settlements.clear();
+    
 }

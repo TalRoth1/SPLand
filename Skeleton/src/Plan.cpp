@@ -24,11 +24,26 @@ Plan& Plan::operator=(const Plan& p)
     {
         delete fac;
     }
+    underConstruction.clear();
     for(Facility* fac : facilities)
     {
         delete fac;
     }
-    *this = Plan(p);
+    facilities.clear();
+    plan_id = p.plan_id;
+    selectionPolicy =p.selectionPolicy->clone();
+    status = p.status;
+    life_quality_score = p.life_quality_score;
+    economy_score = p.economy_score;
+    environment_score = p.environment_score;
+    Settlement set(p.getSettlement().getName(),p.getSettlement().getType()); 
+    //clone settelment and then * make it ref
+
+    for (Facility* fac : p.facilities) 
+        facilities.push_back(new Facility(*fac));
+    for (Facility* fac : p.underConstruction) 
+        underConstruction.push_back(new Facility(*fac));
+    return *this;
     }
     return *this;
 }
