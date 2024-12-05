@@ -257,27 +257,57 @@ void Simulation::start()
             string facName;
             int cat, price, life, eco, env;
             iss >> facName >> cat >> price >> life >> eco >> env;
-            AddFacility* act = new AddFacility(facName, FacilityCategory::LIFE_QUALITY, price, life, eco, env);
+            AddFacility* act =nullptr; 
             switch(cat)
             {
                 case 0:
-                    delete act;
                     act = new AddFacility(facName, FacilityCategory::LIFE_QUALITY, price, life, eco, env);
                     break;
                 case 1:
-                    delete act;
                     act = new AddFacility(facName, FacilityCategory::ECONOMY, price, life, eco, env);
                     break;
                 case 2:
-                    delete act;
                     act = new AddFacility(facName, FacilityCategory::ENVIRONMENT, price, life, eco, env);
                     break;                                   
             }
             act -> act(*this);
         }
+        if(action== "PrintPlanStatus")
+        {
+            int id;
+            iss>> id; 
+            PrintPlanStatus* act = new PrintPlanStatus(id);
+            act -> act(*this);
+        }
+        if(action== "ChangePlanPolicy")
+        {
+            string policy; 
+            int id;
+            iss>> id>> policy; 
+            ChangePlanPolicy* act = new ChangePlanPolicy(id, policy);
+            act -> act(*this);
+        }
+        if(action=="PrintActionsLog")
+        {
+            PrintActionsLog* act = new PrintActionsLog();
+            act -> act(*this);
+        }
         if(action == "log")
         {
             PrintActionsLog* act = new PrintActionsLog();
+            act -> act(*this);
+        }
+        if(action == "BackupSimulation")
+        {
+            
+            BackupSimulation* act = new BackupSimulation();
+           
+            act -> act(*this);
+        }
+        if(action == "RestoreSimulation")
+        {
+            
+            RestoreSimulation* act = new RestoreSimulation();
             act -> act(*this);
         }
         if(action == "close")

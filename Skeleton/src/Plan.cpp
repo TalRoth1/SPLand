@@ -58,14 +58,20 @@ const Settlement& Plan::getSettlement() const
 }
 void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 {
-    if (selectionPolicy != nullptr)
+      if (this->selectionPolicy != nullptr && this->selectionPolicy->toString() == selectionPolicy->toString()) 
+
     {
-        delete selectionPolicy;
-    }
-    if (typeid(this->selectionPolicy) ==  typeid(selectionPolicy))
+        delete selectionPolicy;  
         return;
+    }
+    if (this->selectionPolicy != nullptr) 
+    {
+        delete this->selectionPolicy;
+    }
+
     this->selectionPolicy = selectionPolicy;
 }
+
 void Plan::step()
 {
     int avail = 0;

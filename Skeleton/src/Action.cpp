@@ -208,6 +208,13 @@ void ChangePlanPolicy::act(Simulation &simulation)
 {
     SelectionPolicy* s = new NaiveSelection();
     Plan& currplan = simulation.getPlan(planId);
+    if (newPolicy == currplan.getSelectionPolicy()) 
+     {
+        delete s;  
+        this->error("Cannot change plan policy");
+        simulation.addAction(this);
+        return;
+     }
     if(newPolicy == "nve"){}
     else if (newPolicy == "bal")
     {
@@ -236,6 +243,7 @@ void ChangePlanPolicy::act(Simulation &simulation)
         simulation.addAction(this);
         return;
     }
+     
     currplan.setSelectionPolicy(s);
     this->complete();
     simulation.addAction(this);
@@ -250,9 +258,9 @@ const string ChangePlanPolicy::toString() const
     switch (getStatus())
     {
         case ActionStatus::COMPLETED:
-            return "changePolicy "+ to_string(planId)+ newPolicy+ " COMPLETED";
+            return "ChangePlanPolicy "+ to_string(planId)+" "+ newPolicy+ " COMPLETED";
         case ActionStatus::ERROR:
-            return "changePolicy "+to_string(planId)+ newPolicy+ " ERROR";
+            return "ChangePlanPolicy "+to_string(planId)+" "+ newPolicy+ " ERROR";
     }
     return ""; // Should never get here
 }
