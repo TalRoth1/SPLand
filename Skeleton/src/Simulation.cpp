@@ -135,14 +135,13 @@ Simulation& Simulation::operator=(const Simulation& sim)
             delete act;
         }
         actionsLog.clear();
-        plans.clear();
         for(Settlement* sett : settlements)
         {
             delete sett;
         }
         settlements.clear();
         facilitiesOptions.clear();
-
+        plans.clear();
         this -> isRunning = sim.isRunning;
         this -> planCounter = sim.planCounter;
         for (BaseAction* act : sim.actionsLog)
@@ -297,14 +296,13 @@ void Simulation::start()
             PrintActionsLog* act = new PrintActionsLog();
             act -> act(*this);
         }
-        if(action == "BackupSimulation")
+        if(action == "backup")
         {
             
             BackupSimulation* act = new BackupSimulation();
-           
             act -> act(*this);
         }
-        if(action == "RestoreSimulation")
+        if(action == "restore")
         {
             
             RestoreSimulation* act = new RestoreSimulation();
@@ -407,8 +405,8 @@ void Simulation::close()
     {
         plan.printStatus(); 
     }
-    isRunning = false;
     plans.clear();
+    isRunning = false;
     
 }
 void Simulation::open() 
