@@ -18,22 +18,18 @@ class SelectionPolicy;
 Simulation::Simulation(const string &configFilePath): isRunning(false), planCounter(0), actionsLog(vector<BaseAction*>()), plans(vector<Plan>()), settlements(vector<Settlement*>()), facilitiesOptions(vector<FacilityType>()) 
 {
     this->open();
-    ifstream configFile(configFilePath);  // Open the config file for reading
-
+    ifstream configFile(configFilePath);
     string line;
     while (getline(configFile, line)) {
         istringstream iss(line);
-
-        // Skip empty lines or comment lines (lines starting with "#")
-        if (line.empty() || line[0] == '#') {
+        if (line.empty() || line[0] == '#')
+        {
             continue;
         }
-
         string type;
         iss >> type;
-
-        if (type == "settlement") {
-            // Read settlement details: settlement <settlement_name> <settlement_type>
+        if (type == "settlement") 
+        {
             string settlementName;
             int settlementType;
             iss >> settlementName >> settlementType;
@@ -48,12 +44,11 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
                     settlements.push_back(new Settlement(settlementName, SettlementType::METROPOLIS));
                     break;
             }
-        } else if (type == "facility") {
-            // Read facility details: facility <facility_name> <category> <price> <lifeq_impact> <eco_impact> <env_impact>
+        } else if (type == "facility") 
+        {
             string facilityName;
             int category, price, lifeQualityImpact, economyImpact, environmentImpact;
             iss >> facilityName >> category >> price >> lifeQualityImpact >> economyImpact >> environmentImpact;
-            // Create FacilityType and add to the facilitiesOptions vector
             switch (category) 
             {
                 case 0:
@@ -66,38 +61,37 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
                     facilitiesOptions.push_back(FacilityType(facilityName, FacilityCategory::ENVIRONMENT, price, lifeQualityImpact, economyImpact, environmentImpact));
                     break;
             }
-        } else if (type == "plan") {
-            // Read plan details: plan <settlement_name> <selection_policy>
+        } else if (type == "plan")
+        {
             string settlementName, selectionPolicy;
             iss >> settlementName >> selectionPolicy;
-
-            // Find the settlement object from the settlements vector
             Settlement* settlement = nullptr;
             for (Settlement* s : settlements) {
-                if (s->getName() == settlementName) {
+                if (s->getName() == settlementName) 
+                {
                     settlement = s;
                     break;
                 }
             }
-
-            // Create SelectionPolicy object based on the given selectionPolicy string
             SelectionPolicy* policy = nullptr;
-            if (selectionPolicy == "eco") {
+            if (selectionPolicy == "eco") 
+            {
                 policy = new EconomySelection();
-            } else if (selectionPolicy == "bal") {
-                policy = new BalancedSelection(0, 0, 0);  // Example default parameters, adjust as needed
-            } else if (selectionPolicy == "nve") {
+            } else if (selectionPolicy == "bal") 
+            {
+                policy = new BalancedSelection(0, 0, 0);
+            } else if (selectionPolicy == "nve") 
+            {
                 policy = new NaiveSelection();
-            } else if (selectionPolicy == "env") {
+            } else if (selectionPolicy == "env") 
+            {
                 policy = new SustainabilitySelection();
             }
-
-            // Create Plan object and add to the plans vector
             Plan newPlan(planCounter++, *settlement, policy, facilitiesOptions);
             plans.push_back(newPlan);
         }
     }
-    configFile.close();  // Close the config file after reading
+    configFile.close();
 }
 
 Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCounter(sim.planCounter), actionsLog(), plans(), settlements(), facilitiesOptions(vector<FacilityType>(sim.facilitiesOptions))
@@ -116,13 +110,17 @@ Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCou
     for(Plan p : sim.plans)
     {
         SelectionPolicy* policy = nullptr;
-            if (p.getSelectionPolicy() == "eco") {
+            if (p.getSelectionPolicy() == "eco") 
+            {
                 policy = new EconomySelection();
-            } else if (p.getSelectionPolicy() == "bal") {
-                policy = new BalancedSelection(0, 0, 0);  // Example default parameters, adjust as needed
-            } else if (p.getSelectionPolicy() == "nve") {
+            } else if (p.getSelectionPolicy() == "bal") 
+            {
+                policy = new BalancedSelection(0, 0, 0);
+            } else if (p.getSelectionPolicy() == "nve") 
+            {
                 policy = new NaiveSelection();
-            } else if (p.getSelectionPolicy() == "env") {
+            } else if (p.getSelectionPolicy() == "env") 
+            {
                 policy = new SustainabilitySelection();
             }
         Plan newPlan(p.getPlanID(), *(this -> settlements[0]), new NaiveSelection(), this->facilitiesOptions);
@@ -131,6 +129,7 @@ Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCou
             if (set -> getName() == p.getSettlement().getName())
             {
                 newPlan = Plan(p.getPlanID(), *set, policy, this->facilitiesOptions);
+                newPlan.setScore(p.getlifeQualityScore(), p.getEconomyScore(), p.getEnvironmentScore());
             }
         }
         this->plans.push_back(newPlan);
@@ -180,13 +179,17 @@ Simulation& Simulation::operator=(const Simulation& sim)
         for (const Plan p : sim.plans)
         {
             SelectionPolicy* policy = nullptr;
-                if (p.getSelectionPolicy() == "eco") {
+                if (p.getSelectionPolicy() == "eco") 
+                {
                     policy = new EconomySelection();
-                } else if (p.getSelectionPolicy() == "bal") {
-                    policy = new BalancedSelection(0, 0, 0);  // Example default parameters, adjust as needed
-                } else if (p.getSelectionPolicy() == "nve") {
+                } else if (p.getSelectionPolicy() == "bal") 
+                {
+                    policy = new BalancedSelection(0, 0, 0);
+                } else if (p.getSelectionPolicy() == "nve") 
+                {
                     policy = new NaiveSelection();
-                } else if (p.getSelectionPolicy() == "env") {
+                } else if (p.getSelectionPolicy() == "env") 
+                {
                     policy = new SustainabilitySelection();
                 }
             Plan newPlan(p.getPlanID(), *(this -> settlements[0]), new NaiveSelection(), this->facilitiesOptions);
@@ -195,6 +198,7 @@ Simulation& Simulation::operator=(const Simulation& sim)
                 if (set -> getName() == p.getSettlement().getName())
                 {
                     newPlan = Plan(p.getPlanID(), *set, policy, this->facilitiesOptions);
+                    newPlan.setScore(p.getlifeQualityScore(), p.getEconomyScore(), p.getEnvironmentScore());
                 }
             }
             this->plans.push_back(newPlan);
@@ -237,13 +241,17 @@ Simulation& Simulation::operator=(Simulation&& sim)
         for (const Plan p : sim.plans)
         {
             SelectionPolicy* policy = nullptr;
-                if (p.getSelectionPolicy() == "eco") {
+                if (p.getSelectionPolicy() == "eco")
+                {
                     policy = new EconomySelection();
-                } else if (p.getSelectionPolicy() == "bal") {
-                    policy = new BalancedSelection(0, 0, 0);  // Example default parameters, adjust as needed
-                } else if (p.getSelectionPolicy() == "nve") {
+                } else if (p.getSelectionPolicy() == "bal") 
+                {
+                    policy = new BalancedSelection(0, 0, 0);
+                } else if (p.getSelectionPolicy() == "nve") 
+                {
                     policy = new NaiveSelection();
-                } else if (p.getSelectionPolicy() == "env") {
+                } else if (p.getSelectionPolicy() == "env") 
+                {
                     policy = new SustainabilitySelection();
                 }
             Plan newPlan(p.getPlanID(), *(this -> settlements[0]), new NaiveSelection(), this->facilitiesOptions);
@@ -252,6 +260,7 @@ Simulation& Simulation::operator=(Simulation&& sim)
                 if (set -> getName() == p.getSettlement().getName())
                 {
                     newPlan = Plan(p.getPlanID(), *set, policy, this->facilitiesOptions);
+                    newPlan.setScore(p.getlifeQualityScore(), p.getEconomyScore(), p.getEnvironmentScore());
                 }
             }
             this->plans.push_back(newPlan);
@@ -262,7 +271,7 @@ Simulation& Simulation::operator=(Simulation&& sim)
 void Simulation::start()
 {
     this -> open();
-    cout<< "The simulation has started" <<endl;
+    cout << "The simulation has started" << endl;
     string data;
     string action;
     while(isRunning)
@@ -289,19 +298,16 @@ void Simulation::start()
             string settname;
             int type;
             iss >> settname >> type;
-            AddSettlement* act = new AddSettlement(settname, SettlementType::VILLAGE);
+            AddSettlement* act = nullptr;
             switch(type)
             {
                 case 0:
-                    delete act;
                     act = new AddSettlement(settname, SettlementType::VILLAGE);
                     break;
                 case 1:
-                    delete act;
                     act = new AddSettlement(settname, SettlementType::CITY);
                     break;
                 case 2:
-                    delete act;
                     act = new AddSettlement(settname, SettlementType::METROPOLIS);
                     break;                             
             }
@@ -312,7 +318,7 @@ void Simulation::start()
             string facName;
             int cat, price, life, eco, env;
             iss >> facName >> cat >> price >> life >> eco >> env;
-            AddFacility* act =nullptr; 
+            AddFacility* act = nullptr; 
             switch(cat)
             {
                 case 0:
@@ -327,18 +333,18 @@ void Simulation::start()
             }
             act -> act(*this);
         }
-        else if(action== "planStatus")
+        else if(action == "planStatus")
         {
             int id;
-            iss>> id; 
+            iss >> id; 
             PrintPlanStatus* act = new PrintPlanStatus(id);
             act -> act(*this);
         }
-        else if(action== "changePolicy")
+        else if(action == "changePolicy")
         {
             string policy; 
             int id;
-            iss>> id>> policy; 
+            iss >> id >> policy; 
             ChangePlanPolicy* act = new ChangePlanPolicy(id, policy);
             act -> act(*this);
         }
@@ -374,21 +380,21 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
 
 void Simulation::addAction(BaseAction *action)
 {
-    this->actionsLog.push_back(action);
+    this -> actionsLog.push_back(action);
 }
 bool Simulation::addSettlement(Settlement *settlement)
 {
-    for( Settlement* exist: settlements)
+    for(Settlement* exist : settlements)
     {
-        if(exist->getName() == settlement->getName())
+        if(exist -> getName() == settlement -> getName())
             return false;
     } 
-    settlements.push_back(settlement); 
-    return true;   
+    settlements.push_back(settlement);
+    return true;
 }
 bool Simulation::addFacility(FacilityType facility)
 {
-    for( FacilityType exist: facilitiesOptions)
+    for( FacilityType exist : facilitiesOptions)
     {
         if(exist.getName() == facility.getName())
             return false;
@@ -398,7 +404,7 @@ bool Simulation::addFacility(FacilityType facility)
 }
 bool Simulation::isSettlementExists(const string &settlementName)
 { 
-    for( Settlement* exist: settlements)
+    for(Settlement* exist : settlements)
     {
         if(exist -> getName() == settlementName)
             return true;
@@ -407,8 +413,7 @@ bool Simulation::isSettlementExists(const string &settlementName)
 }
 Settlement& Simulation::getSettlement(const string &settlementName)
 {
-
-    for(Settlement* exist: settlements)
+    for(Settlement* exist : settlements)
     {
         if(exist -> getName() == settlementName)
         {
@@ -421,9 +426,9 @@ Settlement& Simulation::getSettlement(const string &settlementName)
 }
 Plan& Simulation::getPlan(const int planID)
 {
-    for(Plan& exist: plans) 
+    for(Plan& exist : plans) 
     {
-        if(exist.getPlanID()== planID)
+        if(exist.getPlanID() == planID)
         {
             return exist;
         }
@@ -445,7 +450,7 @@ void Simulation::step()
 {
     for(Plan& plan: plans) 
     {
-        plan.step(); 
+        plan.step();
     }   
 }
 void Simulation::close()
@@ -456,7 +461,6 @@ void Simulation::close()
     }
     plans.clear();
     isRunning = false;
-    
 }
 void Simulation::open() 
 {
@@ -464,15 +468,14 @@ void Simulation::open()
 }
 Simulation::~Simulation()
 {
-    for(BaseAction* act : this->actionsLog)
+    for(BaseAction* act : this -> actionsLog)
     {
         delete act;
     }
     actionsLog.clear();
-    for(Settlement* sett : this->settlements)
+    for(Settlement* sett : this -> settlements)
     {
         delete sett;
     }
     settlements.clear();
-    
 }

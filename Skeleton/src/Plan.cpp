@@ -70,6 +70,12 @@ const Settlement& Plan::getSettlement() const
 {
     return this-> settlement;
 }
+void Plan::setScore(int life, int economy, int env)
+{
+    this -> life_quality_score = life;
+    this -> economy_score = economy;
+    this -> environment_score = env;
+}
 void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 {
       if (this->selectionPolicy != nullptr && this->selectionPolicy->toString() == selectionPolicy->toString()) 
@@ -85,7 +91,6 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 
     this->selectionPolicy = selectionPolicy;
 }
-
 void Plan::step()
 {
     int avail = 0;

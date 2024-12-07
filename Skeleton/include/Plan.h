@@ -21,6 +21,7 @@ class Plan {
         const vector<Facility*> getUnderConstruction() const;
         const string getSelectionPolicy() const;
         const Settlement& getSettlement() const;
+        void setScore(int life, int economy, int env);
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);
         void step();
         void printStatus();
