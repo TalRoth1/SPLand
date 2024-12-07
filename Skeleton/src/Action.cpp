@@ -54,7 +54,10 @@ const string SimulateStep::toString() const
 }
 SimulateStep* SimulateStep::clone() const
 {
+
     SimulateStep* copy = new SimulateStep(numOfSteps);
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 
@@ -95,6 +98,8 @@ const string AddPlan::toString() const
 AddPlan* AddPlan::clone() const
 {
     AddPlan* copy = new AddPlan(settlementName, selectionPolicy);
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 
@@ -111,6 +116,8 @@ void AddSettlement::act(Simulation &simulation)
 AddSettlement* AddSettlement::clone() const
 {
     AddSettlement* copy = new AddSettlement(settlementName,settlementType);
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 
@@ -150,6 +157,8 @@ void AddFacility::act(Simulation &simulation)
 AddFacility* AddFacility::clone() const
 {
     AddFacility* copy = new AddFacility(facilityName,facilityCategory,price,lifeQualityScore,economyScore,environmentScore);
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 const string AddFacility::toString() const
@@ -188,6 +197,8 @@ void PrintPlanStatus::act(Simulation &simulation)
 PrintPlanStatus* PrintPlanStatus::clone() const
 {
     PrintPlanStatus* copy = new PrintPlanStatus(planId);
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 const string PrintPlanStatus::toString() const
@@ -251,6 +262,8 @@ void ChangePlanPolicy::act(Simulation &simulation)
 ChangePlanPolicy* ChangePlanPolicy::clone() const
 {
     ChangePlanPolicy* copy = new ChangePlanPolicy(planId, newPolicy);
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 const string ChangePlanPolicy::toString() const
@@ -277,6 +290,8 @@ void PrintActionsLog::act(Simulation &simulation)
 PrintActionsLog* PrintActionsLog::clone() const
 {
     PrintActionsLog* copy = new PrintActionsLog();
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 const string PrintActionsLog::toString() const
@@ -300,6 +315,8 @@ void Close::act(Simulation &simulation)
 Close* Close::clone() const
 {
     Close* copy = new Close();
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 const string Close::toString() const 
@@ -326,6 +343,8 @@ void BackupSimulation::act(Simulation &simulation)
 BackupSimulation* BackupSimulation::clone() const
 {
     BackupSimulation* copy = new BackupSimulation();
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 const string BackupSimulation::toString() const
@@ -349,13 +368,15 @@ void RestoreSimulation::act(Simulation &simulation)
         this -> error("No backup available");
         return;
     }
-    simulation = *backup;
+    simulation = Simulation(*backup);
     this->complete();
     simulation.addAction(this);
 }
 RestoreSimulation* RestoreSimulation::clone() const
 {
     RestoreSimulation* copy = new RestoreSimulation();
+    if(this -> getStatus() == ActionStatus::COMPLETED)
+        copy -> complete();
     return copy;
 }
 const string RestoreSimulation::toString() const

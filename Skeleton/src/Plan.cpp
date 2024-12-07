@@ -19,31 +19,30 @@ Plan& Plan::operator=(const Plan& p)
 {
     if(this != &p)
     {
-    delete selectionPolicy;
-    for(Facility* fac : underConstruction)
-    {
-        delete fac;
-    }
-    underConstruction.clear();
-    for(Facility* fac : facilities)
-    {
-        delete fac;
-    }
-    facilities.clear();
-    plan_id = p.plan_id;
-    selectionPolicy =p.selectionPolicy->clone();
-    status = p.status;
-    life_quality_score = p.life_quality_score;
-    economy_score = p.economy_score;
-    environment_score = p.environment_score;
-    Settlement set(p.getSettlement().getName(),p.getSettlement().getType()); 
-    //clone settelment and then * make it ref
+        delete selectionPolicy;
+        for(Facility* fac : underConstruction)
+        {
+            delete fac;
+        }
+        underConstruction.clear();
+        for(Facility* fac : facilities)
+        {
+            delete fac;
+        }
+        facilities.clear();
+        plan_id = p.plan_id;
+        selectionPolicy = p.selectionPolicy -> clone();
+        status = p.status;
+        life_quality_score = p.life_quality_score;
+        economy_score = p.economy_score;
+        environment_score = p.environment_score;
+        Settlement set(p.getSettlement().getName(),p.getSettlement().getType()); 
+        //clone settelment and then * make it ref
 
-    for (Facility* fac : p.facilities) 
-        facilities.push_back(new Facility(*fac));
-    for (Facility* fac : p.underConstruction) 
-        underConstruction.push_back(new Facility(*fac));
-    return *this;
+        for (Facility* fac : p.facilities) 
+            facilities.push_back(new Facility(*fac));
+        for (Facility* fac : p.underConstruction) 
+            underConstruction.push_back(new Facility(*fac));
     }
     return *this;
 }

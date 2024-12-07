@@ -64,4 +64,11 @@
         "random": "cpp"
     },
     "terminal.integrated.inheritEnv": false,
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/workspaces/SPLand/Skeleton/bin",
+            "binaryPath": "/workspaces/SPLand/Skeleton/bin/simulation",
+            "binaryArgs": []
+        }
+    ],
 }

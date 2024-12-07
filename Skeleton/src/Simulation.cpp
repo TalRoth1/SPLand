@@ -100,19 +100,40 @@ Simulation::Simulation(const string &configFilePath): isRunning(false), planCoun
     configFile.close();  // Close the config file after reading
 }
 
-Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCounter(sim.planCounter), actionsLog(vector<BaseAction*>()), plans(vector<Plan>()), settlements(vector<Settlement*>()), facilitiesOptions(vector<FacilityType>(sim.facilitiesOptions))
+Simulation::Simulation(const Simulation& sim): isRunning(sim.isRunning), planCounter(sim.planCounter), actionsLog(), plans(), settlements(), facilitiesOptions(vector<FacilityType>(sim.facilitiesOptions))
 {
+    this -> actionsLog = vector<BaseAction*>();
+    this -> plans = vector<Plan>();
+    this -> settlements = vector<Settlement*>();
     for(BaseAction* act : sim.actionsLog)
     {
         this->actionsLog.push_back(act -> clone());
     }
-    for(Plan p : sim.plans)
-    {
-        this->plans.push_back(Plan(p));
-    }
     for(Settlement* sett : sim.settlements)
     {
         this->settlements.push_back(new Settlement(*sett));
+    }
+    for(Plan p : sim.plans)
+    {
+        SelectionPolicy* policy = nullptr;
+            if (p.getSelectionPolicy() == "eco") {
+                policy = new EconomySelection();
+            } else if (p.getSelectionPolicy() == "bal") {
+                policy = new BalancedSelection(0, 0, 0);  // Example default parameters, adjust as needed
+            } else if (p.getSelectionPolicy() == "nve") {
+                policy = new NaiveSelection();
+            } else if (p.getSelectionPolicy() == "env") {
+                policy = new SustainabilitySelection();
+            }
+        Plan newPlan(p.getPlanID(), *(this -> settlements[0]), new NaiveSelection(), this->facilitiesOptions);
+        for(Settlement* set : this -> settlements)
+        {
+            if (set -> getName() == p.getSettlement().getName())
+            {
+                newPlan = Plan(p.getPlanID(), *set, policy, this->facilitiesOptions);
+            }
+        }
+        this->plans.push_back(newPlan);
     }
 }
 Simulation::Simulation(Simulation&& sim):isRunning(sim.isRunning), planCounter(sim.planCounter), actionsLog(move(sim.actionsLog)), plans(sim.plans), settlements(move(sim.settlements)), facilitiesOptions(sim.facilitiesOptions)
@@ -152,13 +173,31 @@ Simulation& Simulation::operator=(const Simulation& sim)
         {
             settlements.push_back(new Settlement(*sett));
         }
-        for (const FacilityType& fac : sim.facilitiesOptions)
+        for (const FacilityType fac : sim.facilitiesOptions)
         {
             facilitiesOptions.push_back(fac);
         }
-        for (const Plan& p : sim.plans)
+        for (const Plan p : sim.plans)
         {
-            plans.push_back(p);
+            SelectionPolicy* policy = nullptr;
+                if (p.getSelectionPolicy() == "eco") {
+                    policy = new EconomySelection();
+                } else if (p.getSelectionPolicy() == "bal") {
+                    policy = new BalancedSelection(0, 0, 0);  // Example default parameters, adjust as needed
+                } else if (p.getSelectionPolicy() == "nve") {
+                    policy = new NaiveSelection();
+                } else if (p.getSelectionPolicy() == "env") {
+                    policy = new SustainabilitySelection();
+                }
+            Plan newPlan(p.getPlanID(), *(this -> settlements[0]), new NaiveSelection(), this->facilitiesOptions);
+            for(Settlement* set : this -> settlements)
+            {
+                if (set -> getName() == p.getSettlement().getName())
+                {
+                    newPlan = Plan(p.getPlanID(), *set, policy, this->facilitiesOptions);
+                }
+            }
+            this->plans.push_back(newPlan);
         }
     }
     return *this;
@@ -167,38 +206,55 @@ Simulation& Simulation::operator=(Simulation&& sim)
 {
     if(this != &sim)
     {
-        for(BaseAction* act : actionsLog)
+        for(BaseAction* act : this -> actionsLog)
         {
             delete act;
         }
-        actionsLog.clear();
-        plans.clear();
-        for(Settlement* sett : settlements)
+        this -> actionsLog.clear();
+        this -> plans.clear();
+        for(Settlement* sett : this -> settlements)
         {
             delete sett;
         }
-        settlements.clear();
-        facilitiesOptions.clear();
-
+        this -> settlements.clear();
+        this ->  facilitiesOptions.clear();
         this -> isRunning = sim.isRunning;
         this -> planCounter = sim.planCounter;
         for (BaseAction* act : sim.actionsLog)
         {
-            actionsLog.push_back(act -> clone());
+            this -> actionsLog.push_back(act -> clone());
             act = nullptr;
         }
         for (Settlement* sett : sim.settlements)
         {
-            settlements.push_back(new Settlement(*sett));
+            this -> settlements.push_back(new Settlement(*sett));
             sett = nullptr;
         }
-        for (const FacilityType& fac : sim.facilitiesOptions)
+        for (const FacilityType fac : sim.facilitiesOptions)
         {
-            facilitiesOptions.push_back(fac);
+            this -> facilitiesOptions.push_back(fac);
         }
-        for (const Plan& p : sim.plans)
+        for (const Plan p : sim.plans)
         {
-            plans.push_back(p);
+            SelectionPolicy* policy = nullptr;
+                if (p.getSelectionPolicy() == "eco") {
+                    policy = new EconomySelection();
+                } else if (p.getSelectionPolicy() == "bal") {
+                    policy = new BalancedSelection(0, 0, 0);  // Example default parameters, adjust as needed
+                } else if (p.getSelectionPolicy() == "nve") {
+                    policy = new NaiveSelection();
+                } else if (p.getSelectionPolicy() == "env") {
+                    policy = new SustainabilitySelection();
+                }
+            Plan newPlan(p.getPlanID(), *(this -> settlements[0]), new NaiveSelection(), this->facilitiesOptions);
+            for(Settlement* set : this -> settlements)
+            {
+                if (set -> getName() == p.getSettlement().getName())
+                {
+                    newPlan = Plan(p.getPlanID(), *set, policy, this->facilitiesOptions);
+                }
+            }
+            this->plans.push_back(newPlan);
         }
     }
     return *this;
@@ -221,14 +277,14 @@ void Simulation::start()
             SimulateStep* act = new SimulateStep(steps);
             act -> act(*this);
         }
-        if(action == "plan")
+        else if(action == "plan")
         {
             string settname, selectPol;
             iss >> settname >> selectPol;
             AddPlan* act = new AddPlan(settname, selectPol);
             act -> act(*this);
         }
-        if(action == "settlement")
+        else if(action == "settlement")
         {
             string settname;
             int type;
@@ -251,7 +307,7 @@ void Simulation::start()
             }
             act -> act(*this);
         }
-        if(action == "facility")
+        else if(action == "facility")
         {
             string facName;
             int cat, price, life, eco, env;
@@ -271,14 +327,14 @@ void Simulation::start()
             }
             act -> act(*this);
         }
-        if(action== "planStatus")
+        else if(action== "planStatus")
         {
             int id;
             iss>> id; 
             PrintPlanStatus* act = new PrintPlanStatus(id);
             act -> act(*this);
         }
-        if(action== "changePolicy")
+        else if(action== "changePolicy")
         {
             string policy; 
             int id;
@@ -286,29 +342,22 @@ void Simulation::start()
             ChangePlanPolicy* act = new ChangePlanPolicy(id, policy);
             act -> act(*this);
         }
-        if(action=="PrintActionsLog")
+        else if(action == "log")
         {
             PrintActionsLog* act = new PrintActionsLog();
             act -> act(*this);
         }
-        if(action == "log")
+        else if(action == "backup")
         {
-            PrintActionsLog* act = new PrintActionsLog();
-            act -> act(*this);
-        }
-        if(action == "backup")
-        {
-            
             BackupSimulation* act = new BackupSimulation();
             act -> act(*this);
         }
-        if(action == "restore")
+        else if(action == "restore")
         {
-            
             RestoreSimulation* act = new RestoreSimulation();
             act -> act(*this);
         }
-        if(action == "close")
+        else if(action == "close")
         {
             Close* act = new Close();
             act -> act(*this);
