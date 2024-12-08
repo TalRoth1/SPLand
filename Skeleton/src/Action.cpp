@@ -212,8 +212,6 @@ const string PrintPlanStatus::toString() const
     }
     return ""; // Should never get here
 }
-
-
 ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy): planId(planId), newPolicy(newPolicy){}
 void ChangePlanPolicy::act(Simulation &simulation)
 {
@@ -226,7 +224,12 @@ void ChangePlanPolicy::act(Simulation &simulation)
         simulation.addAction(this);
         return;
      }
-    if(newPolicy == "nve"){}
+    cout << "planID: " << planId << endl;
+    cout << "previousPolicy: " << currplan.getSelectionPolicy() << endl;
+    if(newPolicy == "nve"){
+        cout << "newPolicy: Naive " << endl;
+
+    }
     else if (newPolicy == "bal")
     {
         int life = currplan.getlifeQualityScore();
@@ -239,14 +242,20 @@ void ChangePlanPolicy::act(Simulation &simulation)
             env += fac->getEnvironmentScore();
         }
         s = new BalancedSelection(life,eco,env);
+        cout << "newPolicy: Balanced " << endl;
+
     }
     else if (newPolicy == "eco")
     {
         s = new EconomySelection();
+        cout << "newPolicy: Economy" << endl;
+
     }
     else if (newPolicy == "env")
     {
         s = new SustainabilitySelection();
+        cout << "newPolicy: Sustainability" << endl;
+
     }
     else
     {
